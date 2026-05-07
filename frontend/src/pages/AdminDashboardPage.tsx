@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { BriefcaseBusiness, Save, Trash2, UsersRound } from "lucide-react";
+import { BriefcaseBusiness, Plus, Save, Trash2, UsersRound } from "lucide-react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import {
@@ -8,6 +8,7 @@ import {
   listAdminJobs,
   updateAdminCandidate,
 } from "../api/admin";
+import { createAdminJob, deleteAdminJob } from "../api/jobs";
 import { PageTransition } from "../components/layout/PageTransition";
 import { Button } from "../components/ui/button";
 import { Card } from "../components/ui/card";
@@ -24,6 +25,116 @@ const candidateStatuses: NonNullable<User["candidateStatus"]>[] = [
 ];
 
 const paymentStatuses: NonNullable<User["paymentStatus"]>[] = ["pending", "verified", "rejected"];
+
+function JobAdminPanel() {
+  const queryClient = useQueryClient();
+  const jobsQuery = useQuery({ queryKey: ["admin-jobs"], queryFn: listAdminJobs, retry: false });
+  const [draft, setDraft] = useState({
+    title: "",
+    location: "",
+    description: "",
+  });
+  const createMutation = useMutation({
+    mutationFn: createAdminJob,
+    onSuccess: () => {
+      setDraft({ title: "", location: "", description: "" });
+      void queryClient.invalidateQueries({ queryKey: ["admin-jobs"] });
+      void queryClient.invalidateQueries({ queryKey: ["jobs"] });
+    },
+  });
+  const deleteMutation = useMutation({
+    mutationFn: deleteAdminJob,
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: ["admin-jobs"] });
+      void queryClient.invalidateQueries({ queryKey: ["jobs"] });
+    },
+  });
+
+  return (
+    <section className="mt-12">
+      <h2 className="font-display text-3xl font-extrabold">Job Listings</h2>
+      <div className="mt-6 grid gap-6 lg:grid-cols-[0.85fr_1.15fr]">
+        <Card>
+          <h3 className="font-display text-2xl font-extrabold">Add job</h3>
+          <div className="mt-5 grid gap-4">
+            <Input
+              value={draft.title}
+              onChange={(event) => setDraft({ ...draft, title: event.target.value })}
+              placeholder="Job title"
+            />
+            <Input
+              value={draft.location}
+              onChange={(event) => setDraft({ ...draft, location: event.target.value })}
+              placeholder="Location"
+            />
+            <Textarea
+              value={draft.description}
+              onChange={(event) => setDraft({ ...draft, description: event.target.value })}
+              placeholder="Professional job description"
+            />
+            <Button
+              type="button"
+              disabled={
+                createMutation.isPending ||
+                draft.title.trim().length < 3 ||
+                draft.location.trim().length < 2 ||
+                draft.description.trim().length < 20
+              }
+              onClick={() =>
+                createMutation.mutate({
+                  title: draft.title.trim(),
+                  location: draft.location.trim(),
+                  description: draft.description.trim(),
+                  salaryRange: "Not disclosed",
+                })
+              }
+            >
+              <Plus size={18} />
+              {createMutation.isPending ? "Adding..." : "Add Job"}
+            </Button>
+            {createMutation.isSuccess && (
+              <p className="text-sm font-semibold text-teal">Job added successfully.</p>
+            )}
+            {createMutation.isError && (
+              <p className="text-sm font-semibold text-coral">
+                Unable to add job. Confirm admin login.
+              </p>
+            )}
+          </div>
+        </Card>
+
+        <div className="grid gap-4">
+          {jobsQuery.data?.map((job) => (
+            <Card key={job.id}>
+              <div className="flex flex-col justify-between gap-4 md:flex-row md:items-start">
+                <div>
+                  <h3 className="font-display text-xl font-extrabold">{job.title}</h3>
+                  <p className="mt-2 text-sm font-semibold text-graphite">{job.location}</p>
+                  <p className="mt-3 text-sm leading-6 text-graphite">{job.description}</p>
+                </div>
+                <Button
+                  type="button"
+                  variant="secondary"
+                  onClick={() => deleteMutation.mutate(job.id)}
+                  disabled={deleteMutation.isPending}
+                  className="shrink-0"
+                >
+                  <Trash2 size={18} />
+                  Delete
+                </Button>
+              </div>
+            </Card>
+          ))}
+          {jobsQuery.data?.length === 0 && (
+            <Card>
+              <p className="text-sm text-graphite">No jobs listed yet.</p>
+            </Card>
+          )}
+        </div>
+      </div>
+    </section>
+  );
+}
 
 function CandidateAdminCard({ candidate }: { candidate: CandidateWithApplications }) {
   const queryClient = useQueryClient();
@@ -209,6 +320,8 @@ export function AdminDashboardPage() {
               </p>
             </Card>
           </div>
+
+          <JobAdminPanel />
 
           <section className="mt-12">
             <h2 className="font-display text-3xl font-extrabold">Candidate Records</h2>

@@ -24,3 +24,20 @@ export async function listMyApplications() {
   const { data } = await apiClient.get<{ applications: Application[] }>("/applications/my");
   return data.applications;
 }
+
+export async function createAdminJob(payload: {
+  title: string;
+  description: string;
+  location: string;
+  salaryRange?: string;
+}) {
+  const { data } = await apiClient.post<{ job: Job }>("/jobs", {
+    ...payload,
+    salaryRange: payload.salaryRange ?? "Not disclosed",
+  });
+  return data.job;
+}
+
+export async function deleteAdminJob(id: number) {
+  await apiClient.delete(`/jobs/${id}`);
+}

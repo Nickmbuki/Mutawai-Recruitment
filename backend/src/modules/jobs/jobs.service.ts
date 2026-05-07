@@ -29,17 +29,26 @@ export async function getJob(id: number) {
 }
 
 export async function createJob(input: CreateJobInput, ownerId: number, isAdmin: boolean) {
+  const companyId = input.companyId;
   const company = await db.query.companies.findFirst({
     where: isAdmin
-      ? eq(companies.id, input.companyId)
-      : and(eq(companies.id, input.companyId), eq(companies.ownerId, ownerId)),
+      ? companyId
+        ? eq(companies.id, companyId)
+        : eq(companies.name, "Mutawai HR Consultants Limited")
+      : and(eq(companies.id, companyId ?? 0), eq(companies.ownerId, ownerId)),
   });
 
   if (!company) {
     throw new AppError("Company not found", 404);
   }
 
-  const [job] = await db.insert(jobs).values(input).returning();
+  const [job] = await db
+    .insert(jobs)
+    .values({
+      ...input,
+      companyId: company.id,
+    })
+    .returning();
   return job;
 }
 

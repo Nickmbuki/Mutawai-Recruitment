@@ -9,7 +9,7 @@ export const createJobSchema = z.object({
   description: z.string().min(20),
   salaryRange: z.string().min(3).max(120),
   location: z.string().min(2).max(160),
-  companyId: z.number().int().positive(),
+  companyId: z.number().int().positive().optional(),
 });
 
 export const updateJobSchema = createJobSchema.partial();
