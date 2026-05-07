@@ -6,11 +6,13 @@ import {
   FileText,
   FileUp,
   Link as LinkIcon,
+  Plus,
   Search,
   Send,
   ShieldCheck,
+  X,
 } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { Link } from "react-router-dom";
 import { z } from "zod";
@@ -46,6 +48,7 @@ export function CandidatePortalPage() {
   const [jobQuery, setJobQuery] = useState("");
   const [cvFile, setCvFile] = useState<UploadedFile | null>(null);
   const [documents, setDocuments] = useState<UploadedFile[]>([]);
+  const documentInputRef = useRef<HTMLInputElement | null>(null);
   const profileQuery = useQuery({ queryKey: ["me"], queryFn: getMe, retry: false });
   const jobsQuery = useQuery({ queryKey: ["jobs"], queryFn: listJobs });
   const applicationsQuery = useQuery({
@@ -85,13 +88,12 @@ export function CandidatePortalPage() {
   );
 
   async function handleUpload(files: FileList | null, type: "cv" | "documents") {
-    if (!files?.length) {
+    const selectedFiles = Array.from(files ?? []);
+    if (!selectedFiles.length) {
       return;
     }
 
-    const uploaded = await Promise.all(
-      Array.from(files).map((file) => uploadMutation.mutateAsync(file)),
-    );
+    const uploaded = await Promise.all(selectedFiles.map((file) => uploadMutation.mutateAsync(file)));
 
     if (type === "cv") {
       setCvFile(uploaded[0]);
@@ -219,16 +221,51 @@ export function CandidatePortalPage() {
                 </div>
                 <div>
                   <label className="text-sm font-bold text-ink">Other documents</label>
-                  <Input
+                  <input
+                    ref={documentInputRef}
+                    className="hidden"
                     type="file"
                     multiple
                     accept=".pdf,.doc,.docx,image/png,image/jpeg,image/webp"
-                    onChange={(event) => void handleUpload(event.target.files, "documents")}
+                    onChange={(event) => {
+                      void handleUpload(event.target.files, "documents");
+                      event.currentTarget.value = "";
+                    }}
                   />
+                  <div className="mt-2 flex flex-wrap gap-2">
+                    <Button
+                      type="button"
+                      variant="secondary"
+                      onClick={() => documentInputRef.current?.click()}
+                      disabled={uploadMutation.isPending}
+                    >
+                      <Plus size={18} />
+                      {documents.length ? "Add more documents" : "Choose documents"}
+                    </Button>
+                  </div>
                   {documents.length > 0 && (
-                    <p className="mt-1 text-xs font-semibold text-teal">
-                      {documents.length} supporting document(s) uploaded.
-                    </p>
+                    <div className="mt-3 grid gap-2">
+                      {documents.map((document, index) => (
+                        <div
+                          key={`${document.url}-${index}`}
+                          className="flex items-center justify-between gap-3 rounded-md bg-mist px-3 py-2 text-xs font-semibold text-ink"
+                        >
+                          <span className="truncate">{document.originalName}</span>
+                          <button
+                            type="button"
+                            className="shrink-0 text-coral transition hover:text-ink"
+                            aria-label={`Remove ${document.originalName}`}
+                            onClick={() =>
+                              setDocuments((current) =>
+                                current.filter((_, documentIndex) => documentIndex !== index),
+                              )
+                            }
+                          >
+                            <X size={16} />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
                   )}
                 </div>
                 <Textarea placeholder="Cover letter" {...form.register("coverLetter")} />
