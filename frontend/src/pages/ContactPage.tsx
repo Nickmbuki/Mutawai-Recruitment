@@ -1,5 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Mail, MapPin, Phone, Send } from "lucide-react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { PageTransition } from "../components/layout/PageTransition";
@@ -17,6 +18,7 @@ const contactSchema = z.object({
 type ContactForm = z.infer<typeof contactSchema>;
 
 export function ContactPage() {
+  const [submitted, setSubmitted] = useState(false);
   const form = useForm<ContactForm>({ resolver: zodResolver(contactSchema) });
 
   return (
@@ -43,7 +45,10 @@ export function ContactPage() {
           <Card>
             <form
               className="grid gap-4"
-              onSubmit={form.handleSubmit(() => form.reset())}
+              onSubmit={form.handleSubmit(() => {
+                setSubmitted(true);
+                form.reset();
+              })}
             >
               <Input placeholder="Name" {...form.register("name")} />
               <Input placeholder="Email" {...form.register("email")} />
@@ -52,6 +57,11 @@ export function ContactPage() {
                 <Send size={18} />
                 Send Message
               </Button>
+              {submitted && (
+                <p className="rounded-md bg-teal/10 p-3 text-sm font-semibold text-teal">
+                  Submitted successfully
+                </p>
+              )}
             </form>
           </Card>
         </div>

@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { BriefcaseBusiness, Save, Trash2, UsersRound } from "lucide-react";
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import {
   deleteAdminCandidate,
   listAdminCandidates,
@@ -160,17 +161,33 @@ export function AdminDashboardPage() {
   const candidatesQuery = useQuery({
     queryKey: ["admin-candidates"],
     queryFn: listAdminCandidates,
+    retry: false,
   });
-  const jobsQuery = useQuery({ queryKey: ["admin-jobs"], queryFn: listAdminJobs });
+  const jobsQuery = useQuery({ queryKey: ["admin-jobs"], queryFn: listAdminJobs, retry: false });
 
   return (
     <PageTransition>
       <section className="bg-white py-20">
         <div className="section-shell">
           <p className="eyebrow">Admin Dashboard</p>
-          <h1 className="mt-3 font-display text-5xl font-extrabold text-ink">
+          <h1 className="mt-3 font-display text-4xl font-extrabold text-ink md:text-5xl">
             Mutawai HR candidate oversight.
           </h1>
+          {(candidatesQuery.isLoading || jobsQuery.isLoading) && (
+            <Card className="mt-8">
+              <p className="text-sm font-semibold text-graphite">Loading admin dashboard...</p>
+            </Card>
+          )}
+          {candidatesQuery.isError && (
+            <Card className="mt-8 border-coral/30 bg-coral/5">
+              <p className="text-sm font-semibold text-coral">
+                Admin access is required. Login with the admin account, then open the dashboard.
+              </p>
+              <Link to="/login" className="mt-3 inline-flex text-sm font-bold text-teal">
+                Go to login
+              </Link>
+            </Card>
+          )}
           <div className="mt-10 grid gap-6 md:grid-cols-2">
             <Card>
               <UsersRound className="text-teal" size={30} />
@@ -199,6 +216,11 @@ export function AdminDashboardPage() {
               {candidatesQuery.data?.map((candidate) => (
                 <CandidateAdminCard key={candidate.id} candidate={candidate} />
               ))}
+              {candidatesQuery.data?.length === 0 && (
+                <Card>
+                  <p className="text-sm text-graphite">No candidate records yet.</p>
+                </Card>
+              )}
             </div>
           </section>
         </div>

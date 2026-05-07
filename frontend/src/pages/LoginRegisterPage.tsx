@@ -53,7 +53,7 @@ export function LoginRegisterPage() {
         <div className="section-shell grid gap-10 lg:grid-cols-[0.8fr_1.2fr]">
           <div>
             <p className="eyebrow">Access</p>
-            <h1 className="mt-3 font-display text-5xl font-extrabold text-ink">
+            <h1 className="mt-3 font-display text-4xl font-extrabold text-ink md:text-5xl">
               Secure access for candidates and Mutawai HR administrators.
             </h1>
             <p className="mt-5 text-lg leading-8 text-graphite">
@@ -65,6 +65,7 @@ export function LoginRegisterPage() {
           <Card>
             <div className="mb-6 flex rounded-md bg-mist p-1">
               <button
+                type="button"
                 className={`h-10 flex-1 rounded-md text-sm font-bold ${
                   mode === "login" ? "bg-white text-ink shadow-sm" : "text-graphite"
                 }`}
@@ -73,6 +74,7 @@ export function LoginRegisterPage() {
                 Login
               </button>
               <button
+                type="button"
                 className={`h-10 flex-1 rounded-md text-sm font-bold ${
                   mode === "register" ? "bg-white text-ink shadow-sm" : "text-graphite"
                 }`}
@@ -89,9 +91,9 @@ export function LoginRegisterPage() {
               >
                 <Input placeholder="Email" {...loginForm.register("email")} />
                 <Input placeholder="Password" type="password" {...loginForm.register("password")} />
-                <Button disabled={loginMutation.isPending}>
+                <Button type="submit" disabled={loginMutation.isPending}>
                   <LogIn size={18} />
-                  Login
+                  {loginMutation.isPending ? "Opening..." : "Login"}
                 </Button>
               </form>
             ) : (
@@ -129,9 +131,9 @@ export function LoginRegisterPage() {
                   placeholder="M-Pesa code or PayPal transaction ID"
                   {...registerForm.register("paymentReference")}
                 />
-                <Button disabled={registerMutation.isPending}>
+                <Button type="submit" disabled={registerMutation.isPending}>
                   <UserPlus size={18} />
-                  Register Candidate Account
+                  {registerMutation.isPending ? "Creating..." : "Register Candidate Account"}
                 </Button>
               </form>
             )}
