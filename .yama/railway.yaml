@@ -11,6 +11,9 @@ services:
     env:
       DATABASE_URL: ${{ railway.postgres.DATABASE_URL }}
       JWT_SECRET: ${{ secrets.JWT_SECRET }}
+      CLOUDINARY_CLOUD_NAME: ${{ secrets.CLOUDINARY_CLOUD_NAME }}
+      CLOUDINARY_API_KEY: ${{ secrets.CLOUDINARY_API_KEY }}
+      CLOUDINARY_API_SECRET: ${{ secrets.CLOUDINARY_API_SECRET }}
       PORT: ${{ railway.PORT }}
   frontend:
     root: frontend

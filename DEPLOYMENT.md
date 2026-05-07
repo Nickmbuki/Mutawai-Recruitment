@@ -14,6 +14,9 @@ Backend service:
 DATABASE_URL=
 JWT_SECRET=
 PORT=
+CLOUDINARY_CLOUD_NAME=
+CLOUDINARY_API_KEY=
+CLOUDINARY_API_SECRET=
 ```
 
 Frontend service:
@@ -39,9 +42,10 @@ YAMA should:
 1. Provision or link Railway PostgreSQL.
 2. Inject Railway `DATABASE_URL` into the backend service.
 3. Set a strong `JWT_SECRET` in Railway.
-4. Deploy the backend and verify `/health`.
-5. Set frontend `VITE_API_URL` to the backend `/api` URL.
-6. Build and deploy the frontend service.
+4. Set Cloudinary credentials on the backend service.
+5. Deploy the backend and verify `/health`.
+6. Set frontend `VITE_API_URL` to the backend `/api` URL.
+7. Build and deploy the frontend service.
 
 ## Railway Build Commands
 

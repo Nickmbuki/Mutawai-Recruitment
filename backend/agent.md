@@ -52,13 +52,16 @@ Required backend environment:
 DATABASE_URL=postgres://postgres:postgres@localhost:5432/mutawai_recruitment
 JWT_SECRET=replace-with-a-secure-secret
 PORT=4000
+CLOUDINARY_CLOUD_NAME=your-cloud-name
+CLOUDINARY_API_KEY=your-api-key
+CLOUDINARY_API_SECRET=your-api-secret
 ```
 
 ## Deployment Rules
 
 - Build with `pnpm --filter backend run build`.
 - Start production with `pnpm --filter backend run start`.
-- Railway backend service requires `DATABASE_URL`, `JWT_SECRET`, and `PORT`.
+- Railway backend service requires `DATABASE_URL`, `JWT_SECRET`, `PORT`, `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, and `CLOUDINARY_API_SECRET`.
 - Apply schema changes intentionally before routing production traffic.
 - Never run seed data against production unless explicitly intended.
 
