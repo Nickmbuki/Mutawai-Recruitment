@@ -1,4 +1,5 @@
 import { Router } from "express";
+import path from "node:path";
 import multer from "multer";
 import { requireAuth, requireRole } from "../../middleware/auth.middleware.js";
 import { asyncHandler } from "../../utils/async-handler.js";
@@ -14,6 +15,7 @@ const allowedMimeTypes = new Set([
   "image/png",
   "image/webp",
 ]);
+const allowedExtensions = new Set([".pdf", ".doc", ".docx", ".jpg", ".jpeg", ".png", ".webp"]);
 
 const storage = multer.memoryStorage();
 const upload = multer({
@@ -22,7 +24,9 @@ const upload = multer({
     fileSize: 8 * 1024 * 1024,
   },
   fileFilter: (_req, file, callback) => {
-    if (!allowedMimeTypes.has(file.mimetype)) {
+    const extension = path.extname(file.originalname).toLowerCase();
+
+    if (!allowedMimeTypes.has(file.mimetype) && !allowedExtensions.has(extension)) {
       callback(new Error("Only PDF, DOC, DOCX, JPG, PNG, and WEBP files are allowed"));
       return;
     }

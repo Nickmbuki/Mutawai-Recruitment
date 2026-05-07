@@ -37,12 +37,23 @@ export async function uploadDocument(file: Express.Multer.File): Promise<Uploade
     };
   }
 
-  const result = await cloudinary.uploader.upload(dataUri, {
-    folder: "mutawai/applications",
-    resource_type: "auto",
-    use_filename: true,
-    unique_filename: true,
-  });
+  const result = await cloudinary.uploader
+    .upload(dataUri, {
+      folder: "mutawai/applications",
+      resource_type: "auto",
+      use_filename: true,
+      unique_filename: true,
+    })
+    .catch(() => undefined);
+
+  if (!result) {
+    return {
+      url: dataUri,
+      publicId: `local-${Date.now()}-${file.originalname}`,
+      originalName: file.originalname,
+      mimeType: file.mimetype,
+    };
+  }
 
   return {
     url: result.secure_url,

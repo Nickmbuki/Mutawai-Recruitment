@@ -16,6 +16,11 @@ export const errorMiddleware: ErrorRequestHandler = (error, _req, res, _next) =>
     return;
   }
 
+  if (error instanceof Error && error.message.includes("Only PDF")) {
+    res.status(400).json({ message: error.message });
+    return;
+  }
+
   console.error(error);
   res.status(500).json({ message: "Internal server error" });
 };
