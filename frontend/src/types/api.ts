@@ -40,6 +40,7 @@ export type Application = {
   jobId: number;
   candidateId: number;
   resumeUrl: string;
+  documentUrls?: string | null;
   coverLetter: string;
   status:
     | "submitted"

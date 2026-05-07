@@ -14,6 +14,7 @@ export async function getJob(id: string) {
 export async function createApplication(payload: {
   jobId: number;
   resumeUrl: string;
+  documentUrls?: string[];
   coverLetter: string;
 }) {
   const { data } = await apiClient.post("/applications", payload);

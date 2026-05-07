@@ -1,9 +1,14 @@
+import bcrypt from "bcrypt";
 import { desc, eq } from "drizzle-orm";
 import { db } from "../../db/client.js";
 import { applications, jobs, users } from "../../db/schema.js";
 import { AppError } from "../../utils/app-error.js";
 import { serializeUser } from "../auth/auth.service.js";
-import type { UpdateApplicationAdminInput, UpdateCandidateInput } from "./admin.validators.js";
+import type {
+  CreateCandidateInput,
+  UpdateApplicationAdminInput,
+  UpdateCandidateInput,
+} from "./admin.validators.js";
 
 export async function listUsers() {
   const result = await db.query.users.findMany({
@@ -33,6 +38,36 @@ export async function listCandidates() {
     ...serializeUser(candidate),
     applications: candidate.applications,
   }));
+}
+
+export async function createCandidate(input: CreateCandidateInput) {
+  const existing = await db.query.users.findFirst({
+    where: eq(users.email, input.email.toLowerCase()),
+  });
+
+  if (existing) {
+    throw new AppError("Email is already registered", 409);
+  }
+
+  const passwordHash = await bcrypt.hash(input.password ?? "Candidate123!", 12);
+  const [candidate] = await db
+    .insert(users)
+    .values({
+      name: input.name,
+      email: input.email.toLowerCase(),
+      phone: input.phone,
+      nationalIdOrPassport: input.nationalIdOrPassport,
+      passwordHash,
+      role: "candidate",
+      paymentMethod: input.paymentMethod,
+      paymentReference: input.paymentReference,
+      paymentStatus: input.paymentStatus,
+      candidateStatus: input.candidateStatus,
+      adminComment: input.adminComment,
+    })
+    .returning();
+
+  return serializeUser(candidate);
 }
 
 export async function updateCandidate(id: number, input: UpdateCandidateInput) {

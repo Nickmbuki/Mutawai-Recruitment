@@ -1,10 +1,12 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { ArrowLeft, MapPin, Send } from "lucide-react";
+import { ArrowLeft, FileUp, MapPin, Send } from "lucide-react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Link, useParams } from "react-router-dom";
 import { z } from "zod";
 import { createApplication, getJob } from "../api/jobs";
+import { uploadDocument, type UploadedFile } from "../api/uploads";
 import { PageTransition } from "../components/layout/PageTransition";
 import { Button } from "../components/ui/button";
 import { Card } from "../components/ui/card";
@@ -12,7 +14,6 @@ import { Input } from "../components/ui/input";
 import { Textarea } from "../components/ui/textarea";
 
 const applicationSchema = z.object({
-  resumeUrl: z.string().url("Enter a valid resume URL"),
   coverLetter: z.string().min(20, "Cover letter must be at least 20 characters"),
 });
 
@@ -21,11 +22,38 @@ type ApplicationForm = z.infer<typeof applicationSchema>;
 export function JobDetailsPage() {
   const { id = "1" } = useParams();
   const { data: job, isLoading } = useQuery({ queryKey: ["job", id], queryFn: () => getJob(id) });
+  const [cvFile, setCvFile] = useState<UploadedFile | null>(null);
+  const [documents, setDocuments] = useState<UploadedFile[]>([]);
   const form = useForm<ApplicationForm>({ resolver: zodResolver(applicationSchema) });
+  const uploadMutation = useMutation({ mutationFn: uploadDocument });
   const mutation = useMutation({
-    mutationFn: (payload: ApplicationForm) =>
-      createApplication({ ...payload, jobId: Number(id) }),
+    mutationFn: (payload: ApplicationForm) => {
+      if (!cvFile) {
+        throw new Error("CV upload is required");
+      }
+
+      return createApplication({
+        ...payload,
+        jobId: Number(id),
+        resumeUrl: cvFile.url,
+        documentUrls: documents.map((document) => document.url),
+      });
+    },
   });
+
+  async function handleUpload(files: FileList | null, type: "cv" | "documents") {
+    if (!files?.length) {
+      return;
+    }
+
+    const uploaded = await Promise.all(Array.from(files).map((file) => uploadMutation.mutateAsync(file)));
+    if (type === "cv") {
+      setCvFile(uploaded[0]);
+      return;
+    }
+
+    setDocuments((current) => [...current, ...uploaded]);
+  }
 
   return (
     <PageTransition>
@@ -64,10 +92,29 @@ export function JobDetailsPage() {
                   onSubmit={form.handleSubmit((values) => mutation.mutate(values))}
                 >
                   <div>
-                    <Input placeholder="Resume URL" {...form.register("resumeUrl")} />
-                    {form.formState.errors.resumeUrl && (
-                      <p className="mt-1 text-xs font-semibold text-coral">
-                        {form.formState.errors.resumeUrl.message}
+                    <label className="text-sm font-bold text-ink">Upload CV</label>
+                    <Input
+                      type="file"
+                      accept=".pdf,.doc,.docx,image/png,image/jpeg,image/webp"
+                      onChange={(event) => void handleUpload(event.target.files, "cv")}
+                    />
+                    {cvFile && (
+                      <p className="mt-1 text-xs font-semibold text-teal">
+                        CV uploaded: {cvFile.originalName}
+                      </p>
+                    )}
+                  </div>
+                  <div>
+                    <label className="text-sm font-bold text-ink">Other documents</label>
+                    <Input
+                      type="file"
+                      multiple
+                      accept=".pdf,.doc,.docx,image/png,image/jpeg,image/webp"
+                      onChange={(event) => void handleUpload(event.target.files, "documents")}
+                    />
+                    {documents.length > 0 && (
+                      <p className="mt-1 text-xs font-semibold text-teal">
+                        {documents.length} supporting document(s) uploaded.
                       </p>
                     )}
                   </div>
@@ -79,9 +126,15 @@ export function JobDetailsPage() {
                       </p>
                     )}
                   </div>
-                  <Button type="submit" disabled={mutation.isPending}>
+                  {uploadMutation.isError && (
+                    <p className="text-sm font-semibold text-coral">
+                      Upload failed. Confirm Cloudinary variables are configured.
+                    </p>
+                  )}
+                  <Button type="submit" disabled={mutation.isPending || uploadMutation.isPending || !cvFile}>
+                    <FileUp size={18} />
                     <Send size={18} />
-                    Submit Application
+                    {mutation.isPending ? "Submitting..." : "Submit Application"}
                   </Button>
                   {mutation.isSuccess && (
                     <p className="text-sm font-semibold text-teal">Application submitted.</p>

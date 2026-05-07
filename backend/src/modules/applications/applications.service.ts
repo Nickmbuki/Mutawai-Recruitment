@@ -19,6 +19,7 @@ export async function createApplication(input: CreateApplicationInput, candidate
       jobId: input.jobId,
       candidateId,
       resumeUrl: input.resumeUrl,
+      documentUrls: JSON.stringify(input.documentUrls),
       coverLetter: input.coverLetter,
     })
     .returning();

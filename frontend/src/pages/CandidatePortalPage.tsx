@@ -1,11 +1,22 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Banknote, BriefcaseBusiness, FileText, Link as LinkIcon, Send, ShieldCheck } from "lucide-react";
+import {
+  Banknote,
+  BriefcaseBusiness,
+  FileText,
+  FileUp,
+  Link as LinkIcon,
+  Search,
+  Send,
+  ShieldCheck,
+} from "lucide-react";
+import { useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { Link } from "react-router-dom";
 import { z } from "zod";
 import { getMe } from "../api/auth";
 import { createApplication, listJobs, listMyApplications } from "../api/jobs";
+import { uploadDocument, type UploadedFile } from "../api/uploads";
 import { PageTransition } from "../components/layout/PageTransition";
 import { Badge } from "../components/ui/badge";
 import { Button } from "../components/ui/button";
@@ -15,7 +26,6 @@ import { Textarea } from "../components/ui/textarea";
 
 const applicationSchema = z.object({
   jobId: z.coerce.number().int().positive(),
-  resumeUrl: z.string().url(),
   coverLetter: z.string().min(20),
 });
 
@@ -33,6 +43,9 @@ const statusLabel: Record<string, string> = {
 
 export function CandidatePortalPage() {
   const queryClient = useQueryClient();
+  const [jobQuery, setJobQuery] = useState("");
+  const [cvFile, setCvFile] = useState<UploadedFile | null>(null);
+  const [documents, setDocuments] = useState<UploadedFile[]>([]);
   const profileQuery = useQuery({ queryKey: ["me"], queryFn: getMe, retry: false });
   const jobsQuery = useQuery({ queryKey: ["jobs"], queryFn: listJobs });
   const applicationsQuery = useQuery({
@@ -41,13 +54,52 @@ export function CandidatePortalPage() {
     retry: false,
   });
   const form = useForm<ApplicationForm>({ resolver: zodResolver(applicationSchema) });
+  const uploadMutation = useMutation({ mutationFn: uploadDocument });
   const mutation = useMutation({
-    mutationFn: createApplication,
+    mutationFn: (values: ApplicationForm) => {
+      if (!cvFile) {
+        throw new Error("CV upload is required");
+      }
+
+      return createApplication({
+        ...values,
+        resumeUrl: cvFile.url,
+        documentUrls: documents.map((document) => document.url),
+      });
+    },
     onSuccess: () => {
       form.reset();
+      setCvFile(null);
+      setDocuments([]);
       void queryClient.invalidateQueries({ queryKey: ["my-applications"] });
     },
   });
+  const filteredJobs = useMemo(
+    () =>
+      (jobsQuery.data ?? []).filter((job) =>
+        `${job.title} ${job.location} ${job.description}`
+          .toLowerCase()
+          .includes(jobQuery.toLowerCase()),
+      ),
+    [jobQuery, jobsQuery.data],
+  );
+
+  async function handleUpload(files: FileList | null, type: "cv" | "documents") {
+    if (!files?.length) {
+      return;
+    }
+
+    const uploaded = await Promise.all(
+      Array.from(files).map((file) => uploadMutation.mutateAsync(file)),
+    );
+
+    if (type === "cv") {
+      setCvFile(uploaded[0]);
+      return;
+    }
+
+    setDocuments((current) => [...current, ...uploaded]);
+  }
 
   return (
     <PageTransition>
@@ -104,8 +156,17 @@ export function CandidatePortalPage() {
                 <BriefcaseBusiness className="text-teal" />
                 <h2 className="font-display text-3xl font-extrabold">Available Jobs</h2>
               </div>
+              <label className="relative mt-5 block">
+                <Search className="absolute left-3 top-3 text-graphite" size={18} />
+                <Input
+                  className="pl-10"
+                  placeholder="Search job by name"
+                  value={jobQuery}
+                  onChange={(event) => setJobQuery(event.target.value)}
+                />
+              </label>
               <div className="mt-6 grid gap-5">
-                {jobsQuery.data?.map((job) => (
+                {filteredJobs.map((job) => (
                   <Card key={job.id}>
                     <div className="flex flex-col justify-between gap-4 md:flex-row md:items-start">
                       <div>
@@ -143,11 +204,48 @@ export function CandidatePortalPage() {
                     </option>
                   ))}
                 </select>
-                <Input placeholder="Resume URL" {...form.register("resumeUrl")} />
+                <div>
+                  <label className="text-sm font-bold text-ink">Upload CV</label>
+                  <Input
+                    type="file"
+                    accept=".pdf,.doc,.docx,image/png,image/jpeg,image/webp"
+                    onChange={(event) => void handleUpload(event.target.files, "cv")}
+                  />
+                  {cvFile && (
+                    <p className="mt-1 text-xs font-semibold text-teal">
+                      CV uploaded: {cvFile.originalName}
+                    </p>
+                  )}
+                </div>
+                <div>
+                  <label className="text-sm font-bold text-ink">Other documents</label>
+                  <Input
+                    type="file"
+                    multiple
+                    accept=".pdf,.doc,.docx,image/png,image/jpeg,image/webp"
+                    onChange={(event) => void handleUpload(event.target.files, "documents")}
+                  />
+                  {documents.length > 0 && (
+                    <p className="mt-1 text-xs font-semibold text-teal">
+                      {documents.length} supporting document(s) uploaded.
+                    </p>
+                  )}
+                </div>
                 <Textarea placeholder="Cover letter" {...form.register("coverLetter")} />
-                <Button type="submit" disabled={mutation.isPending || !profileQuery.data}>
+                {uploadMutation.isError && (
+                  <p className="text-sm font-semibold text-coral">
+                    Upload failed. Confirm Cloudinary variables are configured.
+                  </p>
+                )}
+                <Button
+                  type="submit"
+                  disabled={
+                    mutation.isPending || uploadMutation.isPending || !profileQuery.data || !cvFile
+                  }
+                >
+                  <FileUp size={18} />
                   <Send size={18} />
-                  Submit Application
+                  {mutation.isPending ? "Submitting..." : "Submit Application"}
                 </Button>
                 {mutation.isSuccess && (
                   <p className="text-sm font-semibold text-teal">Application submitted.</p>

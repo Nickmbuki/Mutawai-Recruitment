@@ -18,6 +18,22 @@ export async function listAdminCandidates() {
   return data.candidates;
 }
 
+export async function createAdminCandidate(payload: {
+  name: string;
+  email: string;
+  phone: string;
+  nationalIdOrPassport: string;
+  password?: string;
+  paymentMethod?: "mpesa" | "paypal";
+  paymentReference?: string;
+  paymentStatus?: User["paymentStatus"];
+  candidateStatus?: User["candidateStatus"];
+  adminComment?: string;
+}) {
+  const { data } = await apiClient.post<{ candidate: User }>("/admin/candidates", payload);
+  return data.candidate;
+}
+
 export async function updateAdminCandidate(payload: {
   id: number;
   name?: string;

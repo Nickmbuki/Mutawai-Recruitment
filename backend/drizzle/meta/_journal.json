@@ -15,6 +15,13 @@
       "when": 1778166893208,
       "tag": "0001_loving_frank_castle",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1778183001817,
+      "tag": "0002_round_eddie_brock",
+      "breakpoints": true
     }
   ]
 }

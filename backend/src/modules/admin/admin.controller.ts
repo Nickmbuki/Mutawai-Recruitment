@@ -4,6 +4,7 @@ import * as adminService from "./admin.service.js";
 import {
   applicationParamsSchema,
   candidateParamsSchema,
+  createCandidateSchema,
   updateApplicationAdminSchema,
   updateCandidateSchema,
 } from "./admin.validators.js";
@@ -21,6 +22,12 @@ export const listJobs = asyncHandler(async (_req: Request, res: Response) => {
 export const listCandidates = asyncHandler(async (_req: Request, res: Response) => {
   const candidates = await adminService.listCandidates();
   res.json({ candidates });
+});
+
+export const createCandidate = asyncHandler(async (req: Request, res: Response) => {
+  const input = createCandidateSchema.parse(req.body);
+  const candidate = await adminService.createCandidate(input);
+  res.status(201).json({ candidate });
 });
 
 export const updateCandidate = asyncHandler(async (req: Request, res: Response) => {

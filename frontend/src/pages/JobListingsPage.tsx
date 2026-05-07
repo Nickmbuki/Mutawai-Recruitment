@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { Search } from "lucide-react";
+import { useMemo, useState } from "react";
 import { listJobs } from "../api/jobs";
 import { JobCard } from "../components/jobs/JobCard";
 import { PageTransition } from "../components/layout/PageTransition";
@@ -33,8 +34,18 @@ const fallbackJobs: Job[] = [
 ];
 
 export function JobListingsPage() {
+  const [query, setQuery] = useState("");
   const { data, isLoading, isError } = useQuery({ queryKey: ["jobs"], queryFn: listJobs });
   const jobs = data?.length ? data : fallbackJobs;
+  const filteredJobs = useMemo(
+    () =>
+      jobs.filter((job) =>
+        `${job.title} ${job.location} ${job.description}`
+          .toLowerCase()
+          .includes(query.toLowerCase()),
+      ),
+    [jobs, query],
+  );
 
   return (
     <PageTransition>
@@ -50,7 +61,12 @@ export function JobListingsPage() {
               </div>
               <label className="relative block w-full md:max-w-sm">
                 <Search className="absolute left-3 top-3 text-graphite" size={18} />
-                <Input className="pl-10" placeholder="Search role or location" />
+                <Input
+                  className="pl-10"
+                  placeholder="Search job by name"
+                  value={query}
+                  onChange={(event) => setQuery(event.target.value)}
+                />
               </label>
             </div>
           </Reveal>
@@ -66,7 +82,7 @@ export function JobListingsPage() {
               ? Array.from({ length: 3 }).map((_, index) => (
                   <div key={index} className="h-72 animate-pulse rounded-lg bg-mist" />
                 ))
-              : jobs.map((job) => (
+              : filteredJobs.map((job) => (
                   <Reveal key={job.id}>
                     <JobCard job={job} />
                   </Reveal>

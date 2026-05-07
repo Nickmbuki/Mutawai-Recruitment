@@ -1,8 +1,9 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { BriefcaseBusiness, Plus, Save, Trash2, UsersRound } from "lucide-react";
+import { BriefcaseBusiness, Plus, Save, Search, Trash2, UserPlus, UsersRound } from "lucide-react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import {
+  createAdminCandidate,
   deleteAdminCandidate,
   listAdminCandidates,
   listAdminJobs,
@@ -25,6 +26,148 @@ const candidateStatuses: NonNullable<User["candidateStatus"]>[] = [
 ];
 
 const paymentStatuses: NonNullable<User["paymentStatus"]>[] = ["pending", "verified", "rejected"];
+
+function CreateCandidatePanel() {
+  const queryClient = useQueryClient();
+  const [draft, setDraft] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    nationalIdOrPassport: "",
+    password: "",
+    paymentMethod: "mpesa" as "mpesa" | "paypal",
+    paymentReference: "",
+    paymentStatus: "pending" as NonNullable<User["paymentStatus"]>,
+    candidateStatus: "processing" as NonNullable<User["candidateStatus"]>,
+    adminComment: "",
+  });
+  const mutation = useMutation({
+    mutationFn: createAdminCandidate,
+    onSuccess: () => {
+      setDraft({
+        name: "",
+        email: "",
+        phone: "",
+        nationalIdOrPassport: "",
+        password: "",
+        paymentMethod: "mpesa",
+        paymentReference: "",
+        paymentStatus: "pending",
+        candidateStatus: "processing",
+        adminComment: "",
+      });
+      void queryClient.invalidateQueries({ queryKey: ["admin-candidates"] });
+    },
+  });
+
+  return (
+    <Card className="mt-12">
+      <div className="flex items-center gap-3">
+        <UserPlus className="text-teal" />
+        <h2 className="font-display text-2xl font-extrabold">Register candidate directly</h2>
+      </div>
+      <div className="mt-5 grid gap-3 md:grid-cols-2">
+        <Input
+          value={draft.name}
+          onChange={(event) => setDraft({ ...draft, name: event.target.value })}
+          placeholder="Full name"
+        />
+        <Input
+          value={draft.email}
+          onChange={(event) => setDraft({ ...draft, email: event.target.value })}
+          placeholder="Email"
+        />
+        <Input
+          value={draft.phone}
+          onChange={(event) => setDraft({ ...draft, phone: event.target.value })}
+          placeholder="Phone"
+        />
+        <Input
+          value={draft.nationalIdOrPassport}
+          onChange={(event) => setDraft({ ...draft, nationalIdOrPassport: event.target.value })}
+          placeholder="ID or passport number"
+        />
+        <Input
+          value={draft.password}
+          type="password"
+          onChange={(event) => setDraft({ ...draft, password: event.target.value })}
+          placeholder="Password, default Candidate123!"
+        />
+        <Input
+          value={draft.paymentReference}
+          onChange={(event) => setDraft({ ...draft, paymentReference: event.target.value })}
+          placeholder="Payment reference"
+        />
+        <select
+          className="h-11 rounded-md border border-ink/15 bg-white px-3 text-sm outline-none focus:border-teal"
+          value={draft.paymentMethod}
+          onChange={(event) =>
+            setDraft({ ...draft, paymentMethod: event.target.value as "mpesa" | "paypal" })
+          }
+        >
+          <option value="mpesa">M-Pesa</option>
+          <option value="paypal">PayPal</option>
+        </select>
+        <select
+          className="h-11 rounded-md border border-ink/15 bg-white px-3 text-sm outline-none focus:border-teal"
+          value={draft.candidateStatus}
+          onChange={(event) =>
+            setDraft({
+              ...draft,
+              candidateStatus: event.target.value as NonNullable<User["candidateStatus"]>,
+            })
+          }
+        >
+          {candidateStatuses.map((status) => (
+            <option key={status} value={status}>
+              {status}
+            </option>
+          ))}
+        </select>
+      </div>
+      <Textarea
+        className="mt-3"
+        value={draft.adminComment}
+        onChange={(event) => setDraft({ ...draft, adminComment: event.target.value })}
+        placeholder="Admin comment or candidate message"
+      />
+      <Button
+        type="button"
+        className="mt-4"
+        disabled={
+          mutation.isPending ||
+          draft.name.trim().length < 2 ||
+          draft.email.trim().length < 5 ||
+          draft.phone.trim().length < 7 ||
+          draft.nationalIdOrPassport.trim().length < 4
+        }
+        onClick={() =>
+          mutation.mutate({
+            ...draft,
+            name: draft.name.trim(),
+            email: draft.email.trim(),
+            phone: draft.phone.trim(),
+            nationalIdOrPassport: draft.nationalIdOrPassport.trim(),
+            password: draft.password.trim() || undefined,
+            paymentReference: draft.paymentReference.trim() || undefined,
+            adminComment: draft.adminComment.trim() || undefined,
+          })
+        }
+      >
+        <UserPlus size={18} />
+        {mutation.isPending ? "Registering..." : "Register Candidate"}
+      </Button>
+      {mutation.isSuccess && (
+        <p className="mt-3 text-sm font-semibold text-teal">Candidate registered successfully.</p>
+      )}
+      {mutation.isError && (
+        <p className="mt-3 text-sm font-semibold text-coral">
+          Candidate registration failed. Check duplicate email or required fields.
+        </p>
+      )}
+    </Card>
+  );
+}
 
 function JobAdminPanel() {
   const queryClient = useQueryClient();
@@ -269,12 +412,18 @@ function CandidateAdminCard({ candidate }: { candidate: CandidateWithApplication
 }
 
 export function AdminDashboardPage() {
+  const [candidateQuery, setCandidateQuery] = useState("");
   const candidatesQuery = useQuery({
     queryKey: ["admin-candidates"],
     queryFn: listAdminCandidates,
     retry: false,
   });
   const jobsQuery = useQuery({ queryKey: ["admin-jobs"], queryFn: listAdminJobs, retry: false });
+  const filteredCandidates = (candidatesQuery.data ?? []).filter((candidate) =>
+    `${candidate.name} ${candidate.email} ${candidate.nationalIdOrPassport ?? ""}`
+      .toLowerCase()
+      .includes(candidateQuery.toLowerCase()),
+  );
 
   return (
     <PageTransition>
@@ -322,11 +471,23 @@ export function AdminDashboardPage() {
           </div>
 
           <JobAdminPanel />
+          <CreateCandidatePanel />
 
           <section className="mt-12">
-            <h2 className="font-display text-3xl font-extrabold">Candidate Records</h2>
+            <div className="flex flex-col justify-between gap-4 md:flex-row md:items-end">
+              <h2 className="font-display text-3xl font-extrabold">Candidate Records</h2>
+              <label className="relative block w-full md:max-w-md">
+                <Search className="absolute left-3 top-3 text-graphite" size={18} />
+                <Input
+                  className="pl-10"
+                  placeholder="Search by name or ID/passport"
+                  value={candidateQuery}
+                  onChange={(event) => setCandidateQuery(event.target.value)}
+                />
+              </label>
+            </div>
             <div className="mt-6 grid gap-5">
-              {candidatesQuery.data?.map((candidate) => (
+              {filteredCandidates.map((candidate) => (
                 <CandidateAdminCard key={candidate.id} candidate={candidate} />
               ))}
               {candidatesQuery.data?.length === 0 && (

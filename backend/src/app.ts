@@ -7,13 +7,14 @@ import { applicationsRouter } from "./modules/applications/applications.routes.j
 import { authRouter } from "./modules/auth/auth.routes.js";
 import { companiesRouter } from "./modules/companies/companies.routes.js";
 import { jobsRouter } from "./modules/jobs/jobs.routes.js";
+import { uploadRouter } from "./modules/uploads/upload.routes.js";
 import { errorMiddleware } from "./middleware/error.middleware.js";
 
 export const app = express();
 
 app.use(helmet());
 app.use(cors());
-app.use(express.json({ limit: "1mb" }));
+app.use(express.json({ limit: "25mb" }));
 app.use(morgan("combined"));
 
 app.get("/health", (_req, res) => {
@@ -25,11 +26,13 @@ app.use("/api/jobs", jobsRouter);
 app.use("/api/applications", applicationsRouter);
 app.use("/api/companies", companiesRouter);
 app.use("/api/admin", adminRouter);
+app.use("/api/uploads", uploadRouter);
 
 app.use("/auth", authRouter);
 app.use("/jobs", jobsRouter);
 app.use("/applications", applicationsRouter);
 app.use("/companies", companiesRouter);
 app.use("/admin", adminRouter);
+app.use("/uploads", uploadRouter);
 
 app.use(errorMiddleware);

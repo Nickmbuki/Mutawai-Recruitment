@@ -70,6 +70,7 @@ export const applications = pgTable("applications", {
     .notNull()
     .references(() => users.id, { onDelete: "cascade" }),
   resumeUrl: text("resume_url").notNull(),
+  documentUrls: text("document_urls"),
   coverLetter: text("cover_letter").notNull(),
   status: applicationStatusEnum("status").notNull().default("submitted"),
   adminComment: text("admin_comment"),
