@@ -7,7 +7,6 @@ const navItems = [
   { label: "About", href: "/about" },
   { label: "Services", href: "/services" },
   { label: "Jobs", href: "/jobs" },
-  { label: "Employers", href: "/employers" },
   { label: "Candidates", href: "/candidates" },
   { label: "Contact", href: "/contact" },
 ];
@@ -24,7 +23,7 @@ export function Navbar() {
           <span className="flex size-11 items-center justify-center rounded-md bg-ink text-white">
             <BriefcaseBusiness size={22} />
           </span>
-          <span className="font-display text-lg font-extrabold text-ink">Mutawai Consultants</span>
+          <span className="font-display text-lg font-extrabold text-ink">Mutawai HR</span>
         </Link>
 
         <nav className="hidden items-center gap-6 lg:flex">

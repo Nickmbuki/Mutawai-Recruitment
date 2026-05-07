@@ -1,6 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { ArrowLeft, Banknote, MapPin, Send } from "lucide-react";
+import { ArrowLeft, MapPin, Send } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { Link, useParams } from "react-router-dom";
 import { z } from "zod";
@@ -50,14 +50,10 @@ export function JobDetailsPage() {
                     <MapPin size={18} className="text-coral" />
                     {job?.location ?? "Nairobi, Kenya"}
                   </span>
-                  <span className="flex items-center gap-2">
-                    <Banknote size={18} className="text-brass" />
-                    {job?.salaryRange ?? "Competitive"}
-                  </span>
                 </div>
                 <p className="mt-8 max-w-3xl text-lg leading-8 text-graphite">
                   {job?.description ??
-                    "This role is managed by Mutawai Consultants Limited. Apply with a current resume and targeted cover letter."}
+                    "This role is managed by Mutawai HR Consultants Limited. Apply with a current resume and targeted cover letter."}
                 </p>
               </div>
 

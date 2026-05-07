@@ -1,8 +1,8 @@
-# Agent Instructions - Mutawai Consultants Limited Recruitment Platform
+# Agent Instructions - Mutawai HR Consultants Limited Recruitment Platform
 
 ## Project Architecture
 
-This repository is a full-stack TypeScript monorepo for the Mutawai Consultants Limited corporate recruitment platform.
+This repository is a full-stack TypeScript monorepo for the Mutawai HR Consultants Limited corporate recruitment platform.
 
 - Root: PNPM workspace orchestration, Turborepo tasks, shared documentation, Railway deployment metadata, and Docker Compose for local PostgreSQL.
 - `frontend/`: React + Vite + TypeScript client application using TailwindCSS, Framer Motion, React Router, TanStack Query, React Hook Form, Zod, shadcn-style UI primitives, and Lucide icons.

@@ -2,7 +2,7 @@
 
 ## Overview
 
-Mutawai Consultants Limited Recruitment Platform is a TypeScript monorepo with a React frontend and
+Mutawai HR Consultants Limited Recruitment Platform is a TypeScript monorepo with a React frontend and
 Express backend. The backend owns authentication, authorization, database access, and REST API
 contracts. The frontend consumes the API through Axios and TanStack Query.
 
@@ -27,7 +27,6 @@ Frontend routing:
 - `/services`
 - `/jobs`
 - `/jobs/:id`
-- `/employers`
 - `/candidates`
 - `/contact`
 - `/login`
@@ -51,7 +50,7 @@ Backend modules:
 - `users`: user retrieval helper layer
 - `jobs`: public listing plus protected employer/admin management
 - `applications`: protected candidate application workflow
-- `companies`: company profile management for employers
+- `companies`: single-company profile support for Mutawai HR Consultants Limited
 - `admin`: admin-only user and job oversight
 
 ## Database
@@ -84,7 +83,7 @@ Application statuses:
 - Protected routes use `requireAuth`.
 - Role-gated routes use `requireRole`.
 - Admin routes require `admin`.
-- Employer job management requires employer ownership or admin role.
+- Job management requires the admin role.
 - Candidate application routes require `candidate`.
 
 ## Extension Rules

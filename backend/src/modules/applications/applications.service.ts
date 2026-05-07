@@ -2,7 +2,7 @@ import { desc, eq } from "drizzle-orm";
 import { db } from "../../db/client.js";
 import { applications, jobs } from "../../db/schema.js";
 import { AppError } from "../../utils/app-error.js";
-import type { CreateApplicationInput } from "./applications.validators.js";
+import type { CreateApplicationInput, UpdateApplicationInput } from "./applications.validators.js";
 
 export async function createApplication(input: CreateApplicationInput, candidateId: number) {
   const job = await db.query.jobs.findFirst({
@@ -38,4 +38,22 @@ export async function listMyApplications(candidateId: number) {
       },
     },
   });
+}
+
+export async function updateApplication(id: number, input: UpdateApplicationInput) {
+  const existing = await db.query.applications.findFirst({
+    where: eq(applications.id, id),
+  });
+
+  if (!existing) {
+    throw new AppError("Application not found", 404);
+  }
+
+  const [application] = await db
+    .update(applications)
+    .set(input)
+    .where(eq(applications.id, id))
+    .returning();
+
+  return application;
 }

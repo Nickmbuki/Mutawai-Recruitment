@@ -4,8 +4,16 @@ export type User = {
   id: number;
   name: string;
   email: string;
+  phone?: string | null;
+  nationalIdOrPassport?: string | null;
   role: UserRole;
+  candidateStatus?: "processing" | "approved" | "prequalified" | "rejected" | "blocked";
+  paymentMethod?: "mpesa" | "paypal" | null;
+  paymentReference?: string | null;
+  paymentStatus?: "pending" | "verified" | "rejected";
+  adminComment?: string | null;
   createdAt: string;
+  updatedAt?: string;
 };
 
 export type Company = {
@@ -33,7 +41,20 @@ export type Application = {
   candidateId: number;
   resumeUrl: string;
   coverLetter: string;
-  status: "submitted" | "reviewing" | "shortlisted" | "rejected" | "hired";
+  status:
+    | "submitted"
+    | "reviewing"
+    | "shortlisted"
+    | "processing"
+    | "approved"
+    | "prequalified"
+    | "rejected"
+    | "hired";
+  adminComment?: string | null;
   createdAt: string;
   job?: Job;
+};
+
+export type CandidateWithApplications = User & {
+  applications: Application[];
 };

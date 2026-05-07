@@ -2,10 +2,22 @@ import { relations } from "drizzle-orm";
 import { integer, pgEnum, pgTable, serial, text, timestamp, varchar } from "drizzle-orm/pg-core";
 
 export const userRoleEnum = pgEnum("user_role", ["admin", "employer", "candidate"]);
+export const candidateStatusEnum = pgEnum("candidate_status", [
+  "processing",
+  "approved",
+  "prequalified",
+  "rejected",
+  "blocked",
+]);
+export const paymentMethodEnum = pgEnum("payment_method", ["mpesa", "paypal"]);
+export const paymentStatusEnum = pgEnum("payment_status", ["pending", "verified", "rejected"]);
 export const applicationStatusEnum = pgEnum("application_status", [
   "submitted",
   "reviewing",
   "shortlisted",
+  "processing",
+  "approved",
+  "prequalified",
   "rejected",
   "hired",
 ]);
@@ -14,9 +26,17 @@ export const users = pgTable("users", {
   id: serial("id").primaryKey(),
   name: varchar("name", { length: 160 }).notNull(),
   email: varchar("email", { length: 255 }).notNull().unique(),
+  phone: varchar("phone", { length: 40 }),
+  nationalIdOrPassport: varchar("national_id_or_passport", { length: 120 }),
   passwordHash: text("password_hash").notNull(),
   role: userRoleEnum("role").notNull().default("candidate"),
+  candidateStatus: candidateStatusEnum("candidate_status").notNull().default("processing"),
+  paymentMethod: paymentMethodEnum("payment_method"),
+  paymentReference: varchar("payment_reference", { length: 180 }),
+  paymentStatus: paymentStatusEnum("payment_status").notNull().default("pending"),
+  adminComment: text("admin_comment"),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
 });
 
 export const companies = pgTable("companies", {
@@ -52,6 +72,7 @@ export const applications = pgTable("applications", {
   resumeUrl: text("resume_url").notNull(),
   coverLetter: text("cover_letter").notNull(),
   status: applicationStatusEnum("status").notNull().default("submitted"),
+  adminComment: text("admin_comment"),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
 
@@ -89,3 +110,6 @@ export const applicationsRelations = relations(applications, ({ one }) => ({
 
 export type UserRole = (typeof userRoleEnum.enumValues)[number];
 export type ApplicationStatus = (typeof applicationStatusEnum.enumValues)[number];
+export type CandidateStatus = (typeof candidateStatusEnum.enumValues)[number];
+export type PaymentMethod = (typeof paymentMethodEnum.enumValues)[number];
+export type PaymentStatus = (typeof paymentStatusEnum.enumValues)[number];

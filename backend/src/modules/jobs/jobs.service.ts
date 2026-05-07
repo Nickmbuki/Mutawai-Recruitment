@@ -36,7 +36,7 @@ export async function createJob(input: CreateJobInput, ownerId: number, isAdmin:
   });
 
   if (!company) {
-    throw new AppError("Company not found or not owned by employer", 404);
+    throw new AppError("Company not found", 404);
   }
 
   const [job] = await db.insert(jobs).values(input).returning();

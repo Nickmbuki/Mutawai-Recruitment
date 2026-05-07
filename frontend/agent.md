@@ -1,4 +1,4 @@
-# Frontend Agent Instructions - Mutawai Consultants Limited
+# Frontend Agent Instructions - Mutawai HR Consultants Limited
 
 ## Architecture
 

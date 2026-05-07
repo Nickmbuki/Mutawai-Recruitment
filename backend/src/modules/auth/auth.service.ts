@@ -12,8 +12,16 @@ export function serializeUser(user: typeof users.$inferSelect) {
     id: user.id,
     name: user.name,
     email: user.email,
+    phone: user.phone,
+    nationalIdOrPassport: user.nationalIdOrPassport,
     role: user.role,
+    candidateStatus: user.candidateStatus,
+    paymentMethod: user.paymentMethod,
+    paymentReference: user.paymentReference,
+    paymentStatus: user.paymentStatus,
+    adminComment: user.adminComment,
     createdAt: user.createdAt,
+    updatedAt: user.updatedAt,
   };
 }
 
@@ -46,8 +54,14 @@ export async function register(input: RegisterInput) {
     .values({
       name: input.name,
       email: input.email.toLowerCase(),
+      phone: input.phone,
+      nationalIdOrPassport: input.nationalIdOrPassport,
       passwordHash,
-      role: input.role,
+      role: "candidate",
+      paymentMethod: input.paymentMethod,
+      paymentReference: input.paymentReference,
+      paymentStatus: "pending",
+      candidateStatus: "processing",
     })
     .returning();
 

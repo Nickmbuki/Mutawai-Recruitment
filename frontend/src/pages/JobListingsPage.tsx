@@ -10,25 +10,25 @@ import type { Job } from "../types/api";
 const fallbackJobs: Job[] = [
   {
     id: 1,
-    title: "Senior Finance Manager",
+    title: "Bike Rider",
     description:
-      "Lead finance operations, reporting, and stakeholder advisory for a regional enterprise client.",
-    salaryRange: "KES 450,000 - 650,000",
+      "Responsible for timely dispatch, client deliveries, route discipline, basic delivery records, and professional customer-facing conduct.",
+    salaryRange: "Not disclosed",
     location: "Nairobi, Kenya",
     companyId: 1,
     createdAt: new Date().toISOString(),
-    company: { id: 1, name: "Mutawai Partner", description: "", ownerId: 1 },
+    company: { id: 1, name: "Mutawai HR Consultants Limited", description: "", ownerId: 1 },
   },
   {
     id: 2,
-    title: "People Operations Lead",
+    title: "Caregiver",
     description:
-      "Build people systems, hiring processes, and employee engagement programs for a scaling organization.",
-    salaryRange: "KES 300,000 - 420,000",
-    location: "Hybrid",
+      "Assists elderly, recovering, or dependent clients with personal care, companionship, mobility support, and daily routines.",
+    salaryRange: "Not disclosed",
+    location: "Home care placements",
     companyId: 1,
     createdAt: new Date().toISOString(),
-    company: { id: 1, name: "Mutawai Partner", description: "", ownerId: 1 },
+    company: { id: 1, name: "Mutawai HR Consultants Limited", description: "", ownerId: 1 },
   },
 ];
 

@@ -2,7 +2,6 @@ import { motion } from "framer-motion";
 import { ArrowRight, Building2, CheckCircle2, SearchCheck } from "lucide-react";
 import { Link } from "react-router-dom";
 import { CandidateCard } from "../components/cards/CandidateCard";
-import { EmployerCard } from "../components/cards/EmployerCard";
 import { PageTransition } from "../components/layout/PageTransition";
 import { CTASection } from "../components/sections/CTASection";
 import { Reveal } from "../components/sections/Reveal";
@@ -23,14 +22,14 @@ export function HomePage() {
         <div className="section-shell relative grid min-h-[720px] items-center gap-12 py-20 lg:grid-cols-[1.1fr_0.9fr]">
           <motion.div initial={{ opacity: 0, y: 34 }} animate={{ opacity: 1, y: 0 }}>
             <p className="text-xs font-bold uppercase tracking-[0.18em] text-brass">
-              Mutawai Consultants Limited
+              Mutawai HR Consultants Limited
             </p>
             <h1 className="mt-5 max-w-4xl font-display text-5xl font-extrabold leading-tight md:text-7xl">
               Corporate recruitment for decisive hiring teams.
             </h1>
             <p className="mt-6 max-w-2xl text-lg leading-8 text-white/78">
-              We connect high-trust employers with carefully assessed professionals through
-              executive search, recruitment delivery, and candidate advisory.
+              We connect candidates with vetted service, hospitality, healthcare, domestic, and
+              logistics opportunities through a structured HR placement process.
             </p>
             <div className="mt-9 flex flex-wrap gap-3">
               <Link to="/jobs">
@@ -80,13 +79,21 @@ export function HomePage() {
             <div className="max-w-2xl">
               <p className="eyebrow">Services</p>
               <h2 className="mt-3 font-display text-4xl font-extrabold text-ink">
-                Recruitment programs for employers and candidates.
+                Recruitment programs for candidates and managed placements.
               </h2>
             </div>
           </Reveal>
           <div className="mt-10 grid gap-6 lg:grid-cols-2">
             <Reveal>
-              <EmployerCard />
+              <div className="rounded-lg border border-ink/10 bg-white p-6 shadow-sm">
+                <h3 className="font-display text-2xl font-extrabold text-ink">
+                  Single Employer Placement Desk
+                </h3>
+                <p className="mt-3 text-sm leading-6 text-graphite">
+                  Mutawai HR Consultants Limited manages one hiring pipeline with clear job listings,
+                  candidate review, payment verification, and admin status updates.
+                </p>
+              </div>
             </Reveal>
             <Reveal>
               <CandidateCard />
@@ -128,7 +135,7 @@ export function HomePage() {
       <section className="py-20">
         <div className="section-shell grid gap-8 md:grid-cols-3">
           {[
-            [Building2, "Employers", "Structured search, careful screening, and shortlist delivery."],
+            [Building2, "Mutawai HR", "Managed recruitment records and candidate screening."],
             [SearchCheck, "Candidates", "Confidential guidance for senior and specialist roles."],
             [CheckCircle2, "Administrators", "Operational visibility across jobs, users, and activity."],
           ].map(([Icon, title, body]) => (

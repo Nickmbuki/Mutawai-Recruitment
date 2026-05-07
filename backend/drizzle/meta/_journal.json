@@ -8,6 +8,13 @@
       "when": 1778121054999,
       "tag": "0000_vengeful_flatman",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1778166893208,
+      "tag": "0001_loving_frank_castle",
+      "breakpoints": true
     }
   ]
 }

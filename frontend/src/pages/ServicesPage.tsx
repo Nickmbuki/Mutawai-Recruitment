@@ -26,8 +26,8 @@ const services = [
   },
   {
     icon: ClipboardCheck,
-    title: "Employer Portal",
-    body: "Create companies, publish jobs, and track recruitment activity through a protected workflow.",
+    title: "Admin Placement Desk",
+    body: "Review candidates, update approval status, manage comments, and track applications through a protected workflow.",
   },
   {
     icon: Compass,

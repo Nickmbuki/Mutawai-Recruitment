@@ -7,7 +7,6 @@ import { AboutPage } from "./pages/AboutPage";
 import { AdminDashboardPage } from "./pages/AdminDashboardPage";
 import { CandidatePortalPage } from "./pages/CandidatePortalPage";
 import { ContactPage } from "./pages/ContactPage";
-import { EmployerPortalPage } from "./pages/EmployerPortalPage";
 import { HomePage } from "./pages/HomePage";
 import { JobDetailsPage } from "./pages/JobDetailsPage";
 import { JobListingsPage } from "./pages/JobListingsPage";
@@ -27,7 +26,6 @@ function AnimatedRoutes() {
         <Route path="/services" element={<ServicesPage />} />
         <Route path="/jobs" element={<JobListingsPage />} />
         <Route path="/jobs/:id" element={<JobDetailsPage />} />
-        <Route path="/employers" element={<EmployerPortalPage />} />
         <Route path="/candidates" element={<CandidatePortalPage />} />
         <Route path="/contact" element={<ContactPage />} />
         <Route path="/login" element={<LoginRegisterPage />} />

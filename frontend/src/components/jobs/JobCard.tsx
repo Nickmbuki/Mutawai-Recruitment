@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { ArrowRight, Banknote, MapPin } from "lucide-react";
+import { ArrowRight, MapPin } from "lucide-react";
 import { Link } from "react-router-dom";
 import type { Job } from "../../types/api";
 import { Badge } from "../ui/badge";
@@ -21,10 +21,6 @@ export function JobCard({ job }: { job: Job }) {
           <span className="flex items-center gap-2">
             <MapPin size={16} className="text-coral" />
             {job.location}
-          </span>
-          <span className="flex items-center gap-2">
-            <Banknote size={16} className="text-brass" />
-            {job.salaryRange}
           </span>
         </div>
         <Link className="mt-6 inline-flex text-sm font-bold text-teal" to={`/jobs/${job.id}`}>

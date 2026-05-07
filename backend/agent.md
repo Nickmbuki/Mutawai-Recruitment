@@ -1,4 +1,4 @@
-# Backend Agent Instructions - Mutawai Consultants Limited
+# Backend Agent Instructions - Mutawai HR Consultants Limited
 
 ## Architecture
 

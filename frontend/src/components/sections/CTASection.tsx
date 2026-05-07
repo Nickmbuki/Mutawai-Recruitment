@@ -13,7 +13,7 @@ export function CTASection() {
               Talent strategy session
             </p>
             <h2 className="mt-3 max-w-3xl font-display text-4xl font-extrabold">
-              Build a stronger hiring pipeline with Mutawai Consultants Limited.
+              Build your job profile with Mutawai HR Consultants Limited.
             </h2>
           </div>
           <Link to="/contact">

@@ -1,5 +1,5 @@
 import { apiClient } from "../lib/api-client";
-import type { User, UserRole } from "../types/api";
+import type { User } from "../types/api";
 
 type AuthResponse = {
   user: User;
@@ -15,8 +15,11 @@ export async function login(payload: { email: string; password: string }) {
 export async function register(payload: {
   name: string;
   email: string;
+  phone: string;
+  nationalIdOrPassport: string;
   password: string;
-  role: Exclude<UserRole, "admin">;
+  paymentMethod: "mpesa" | "paypal";
+  paymentReference: string;
 }) {
   const { data } = await apiClient.post<AuthResponse>("/auth/register", payload);
   localStorage.setItem("mutawai_access_token", data.accessToken);

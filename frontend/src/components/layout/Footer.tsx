@@ -10,7 +10,9 @@ export function Footer() {
             <span className="flex size-11 items-center justify-center rounded-md bg-brass text-ink">
               <BriefcaseBusiness size={22} />
             </span>
-            <span className="font-display text-lg font-extrabold">Mutawai Consultants Limited</span>
+            <span className="font-display text-lg font-extrabold">
+              Mutawai HR Consultants Limited
+            </span>
           </div>
           <p className="mt-5 max-w-md text-sm leading-7 text-white/70">
             Corporate recruitment, executive search, and talent advisory for organizations that
@@ -41,7 +43,7 @@ export function Footer() {
               <Phone size={16} /> +254 700 000 000
             </span>
             <span className="flex items-center gap-2">
-              <Linkedin size={16} /> Mutawai Consultants Limited
+              <Linkedin size={16} /> Mutawai HR Consultants Limited
             </span>
           </div>
         </div>

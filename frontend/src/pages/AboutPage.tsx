@@ -21,8 +21,8 @@ export function AboutPage() {
                 Recruitment counsel for companies that hire with intent.
               </h1>
               <p className="mt-6 text-lg leading-8 text-graphite">
-                Mutawai Consultants Limited partners with boards, founders, HR leaders, and hiring
-                managers to deliver credible shortlists and a polished search experience.
+                Mutawai HR Consultants Limited manages candidate registration, payment review,
+                screening, and placement workflows for available job opportunities.
               </p>
             </div>
           </Reveal>

@@ -1,6 +1,6 @@
-# Mutawai Consultants Limited Recruitment Platform
+# Mutawai HR Consultants Limited Recruitment Platform
 
-Production-grade full-stack recruitment platform for Mutawai Consultants Limited.
+Production-grade full-stack recruitment platform for Mutawai HR Consultants Limited.
 
 ## Stack
 
