@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { CreditCard, Download, FileText, RefreshCw, Sparkles, Upload } from "lucide-react";
+import { CreditCard, Download, RefreshCw, Sparkles, Upload } from "lucide-react";
 import { useMemo, useState } from "react";
 import {
   capturePaypalCvOrder,
@@ -24,20 +24,14 @@ type CvFormat = "format-1" | "format-2";
 const formats: Array<{
   id: CvFormat;
   title: string;
-  body: string;
-  sampleUrl: string;
 }> = [
   {
     id: "format-1",
     title: "Format 1",
-    body: "Kitchen helper style CV structure based on the Eric Munene Mithika sample.",
-    sampleUrl: "/cv-templates/format-1-kitchen-helper-sample.pdf",
   },
   {
     id: "format-2",
     title: "Format 2",
-    body: "Professional CV structure based on the Stella Kwamboka Jackson sample.",
-    sampleUrl: "/cv-templates/format-2-stella-sample.pdf",
   },
 ];
 
@@ -254,17 +248,9 @@ export function PaidCvGeneratorPanel({ candidate }: PaidCvGeneratorPanelProps) {
                       : "border-ink/10 bg-white hover:border-teal"
                   }`}
                 >
-                  <span className="font-display text-lg font-extrabold">{format.title}</span>
-                  <span className="mt-2 block text-sm leading-6 text-graphite">{format.body}</span>
-                  <a
-                    className="mt-3 inline-flex text-sm font-bold text-teal"
-                    href={format.sampleUrl}
-                    target="_blank"
-                    rel="noreferrer"
-                    onClick={(event) => event.stopPropagation()}
-                  >
-                    View sample
-                  </a>
+                  <span className="block text-center font-display text-xl font-extrabold">
+                    {format.title}
+                  </span>
                 </button>
               ))}
             </div>
@@ -313,15 +299,9 @@ export function PaidCvGeneratorPanel({ candidate }: PaidCvGeneratorPanelProps) {
           )}
 
           {generatedCv && (
-            <div className="max-h-72 overflow-auto rounded-md border border-ink/10 bg-porcelain p-4">
-              <div className="mb-3 flex items-center gap-2 text-sm font-bold text-ink">
-                <FileText size={18} />
-                Professional CV Draft
-              </div>
-              <pre className="whitespace-pre-wrap text-xs leading-6 text-graphite">
-                {generatedCv}
-              </pre>
-            </div>
+            <p className="rounded-md border border-teal/20 bg-teal/10 p-4 text-sm font-semibold text-teal">
+              CV generated successfully. Download the file to view it.
+            </p>
           )}
 
           {!generatedCv && (
