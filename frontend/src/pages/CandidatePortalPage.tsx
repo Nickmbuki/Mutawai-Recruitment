@@ -20,6 +20,7 @@ import { getMe } from "../api/auth";
 import { createApplication, listJobs, listMyApplications } from "../api/jobs";
 import { uploadDocument, type UploadedFile } from "../api/uploads";
 import { PageTransition } from "../components/layout/PageTransition";
+import { PaidCvGeneratorPanel } from "../components/sections/PaidCvGeneratorPanel";
 import { Badge } from "../components/ui/badge";
 import { Button } from "../components/ui/button";
 import { Card } from "../components/ui/card";
@@ -128,12 +129,10 @@ export function CandidatePortalPage() {
               </Card>
               <Card>
                 <Banknote className="text-brass" />
-                <h2 className="mt-4 font-display text-xl font-extrabold">Payment Review</h2>
-                <Badge className="mt-3">
-                  {statusLabel[profileQuery.data.paymentStatus ?? "pending"]}
-                </Badge>
-                <p className="mt-4 text-sm text-graphite">
-                  Reference: {profileQuery.data.paymentReference ?? "Not submitted"}
+                <h2 className="mt-4 font-display text-xl font-extrabold">Paid Services</h2>
+                <Badge className="mt-3">Optional</Badge>
+                <p className="mt-4 text-sm leading-6 text-graphite">
+                  Pay only when requesting professional CV generation from your uploaded generic CV.
                 </p>
               </Card>
               <Card>
@@ -150,6 +149,12 @@ export function CandidatePortalPage() {
                 Login as a candidate to view your profile, messages, and applications.
               </p>
             </Card>
+          )}
+
+          {profileQuery.data && (
+            <section className="mt-10">
+              <PaidCvGeneratorPanel candidate={profileQuery.data} />
+            </section>
           )}
 
           <div className="mt-10 grid gap-8 lg:grid-cols-[1.2fr_0.8fr]">

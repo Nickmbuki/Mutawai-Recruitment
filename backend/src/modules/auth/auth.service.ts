@@ -58,8 +58,6 @@ export async function register(input: RegisterInput) {
       nationalIdOrPassport: input.nationalIdOrPassport,
       passwordHash,
       role: "candidate",
-      paymentMethod: input.paymentMethod,
-      paymentReference: input.paymentReference,
       paymentStatus: "pending",
       candidateStatus: "processing",
     })

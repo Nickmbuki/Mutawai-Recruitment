@@ -41,7 +41,7 @@ export const services: Service[] = [
   {
     icon: UsersRound,
     title: "Candidate Screening",
-    body: "Profile review, identity capture, document review, payment review, and admin-managed approval status.",
+    body: "Profile review, identity capture, document review, paid-service tracking, and admin-managed approval status.",
     image:
       "https://images.unsplash.com/photo-1551836022-d5d88e9218df?auto=format&fit=crop&w=1200&q=80",
   },

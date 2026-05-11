@@ -5,6 +5,7 @@ import { useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { Link, useParams } from "react-router-dom";
 import { z } from "zod";
+import { getMe } from "../api/auth";
 import { createApplication, getJob } from "../api/jobs";
 import { uploadDocument, type UploadedFile } from "../api/uploads";
 import { PageTransition } from "../components/layout/PageTransition";
@@ -22,6 +23,7 @@ type ApplicationForm = z.infer<typeof applicationSchema>;
 export function JobDetailsPage() {
   const { id = "1" } = useParams();
   const { data: job, isLoading } = useQuery({ queryKey: ["job", id], queryFn: () => getJob(id) });
+  const profileQuery = useQuery({ queryKey: ["me"], queryFn: getMe, retry: false });
   const [cvFile, setCvFile] = useState<UploadedFile | null>(null);
   const [documents, setDocuments] = useState<UploadedFile[]>([]);
   const documentInputRef = useRef<HTMLInputElement | null>(null);
@@ -89,10 +91,23 @@ export function JobDetailsPage() {
 
               <Card>
                 <h2 className="font-display text-2xl font-extrabold">Apply for this role</h2>
-                <form
-                  className="mt-6 grid gap-4"
-                  onSubmit={form.handleSubmit((values) => mutation.mutate(values))}
-                >
+                {!profileQuery.data ? (
+                  <div className="mt-6 rounded-md border border-brass/30 bg-brass/10 p-4">
+                    <p className="text-sm font-semibold text-ink">
+                      Register or login as a candidate before applying for this job.
+                    </p>
+                    <Link to="/login" className="mt-4 inline-flex">
+                      <Button type="button">
+                        <FileUp size={18} />
+                        Register / Login to Apply
+                      </Button>
+                    </Link>
+                  </div>
+                ) : (
+                  <form
+                    className="mt-6 grid gap-4"
+                    onSubmit={form.handleSubmit((values) => mutation.mutate(values))}
+                  >
                   <div>
                     <label className="text-sm font-bold text-ink">Upload CV</label>
                     <Input
@@ -181,7 +196,8 @@ export function JobDetailsPage() {
                       Sign in as a candidate before applying.
                     </p>
                   )}
-                </form>
+                  </form>
+                )}
               </Card>
             </div>
           )}

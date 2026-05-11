@@ -18,8 +18,6 @@ export async function register(payload: {
   phone: string;
   nationalIdOrPassport: string;
   password: string;
-  paymentMethod: "mpesa" | "paypal";
-  paymentReference: string;
 }) {
   const { data } = await apiClient.post<AuthResponse>("/auth/register", payload);
   localStorage.setItem("mutawai_access_token", data.accessToken);
