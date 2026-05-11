@@ -77,9 +77,42 @@ export const applications = pgTable("applications", {
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
 
+export const cvServicePayments = pgTable("cv_service_payments", {
+  id: serial("id").primaryKey(),
+  candidateId: integer("candidate_id")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+  method: paymentMethodEnum("method").notNull(),
+  status: paymentStatusEnum("status").notNull().default("pending"),
+  providerReference: varchar("provider_reference", { length: 220 }),
+  checkoutRequestId: varchar("checkout_request_id", { length: 220 }),
+  amount: varchar("amount", { length: 40 }).notNull(),
+  currency: varchar("currency", { length: 12 }).notNull(),
+  generationLimit: integer("generation_limit").notNull().default(3),
+  generationCount: integer("generation_count").notNull().default(0),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+export const cvGenerations = pgTable("cv_generations", {
+  id: serial("id").primaryKey(),
+  paymentId: integer("payment_id")
+    .notNull()
+    .references(() => cvServicePayments.id, { onDelete: "cascade" }),
+  candidateId: integer("candidate_id")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+  formatId: varchar("format_id", { length: 40 }).notNull(),
+  genericCvName: varchar("generic_cv_name", { length: 255 }).notNull(),
+  generatedCv: text("generated_cv").notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
 export const usersRelations = relations(users, ({ many }) => ({
   companies: many(companies),
   applications: many(applications),
+  cvServicePayments: many(cvServicePayments),
+  cvGenerations: many(cvGenerations),
 }));
 
 export const companiesRelations = relations(companies, ({ one, many }) => ({
@@ -105,6 +138,25 @@ export const applicationsRelations = relations(applications, ({ one }) => ({
   }),
   candidate: one(users, {
     fields: [applications.candidateId],
+    references: [users.id],
+  }),
+}));
+
+export const cvServicePaymentsRelations = relations(cvServicePayments, ({ one, many }) => ({
+  candidate: one(users, {
+    fields: [cvServicePayments.candidateId],
+    references: [users.id],
+  }),
+  generations: many(cvGenerations),
+}));
+
+export const cvGenerationsRelations = relations(cvGenerations, ({ one }) => ({
+  payment: one(cvServicePayments, {
+    fields: [cvGenerations.paymentId],
+    references: [cvServicePayments.id],
+  }),
+  candidate: one(users, {
+    fields: [cvGenerations.candidateId],
     references: [users.id],
   }),
 }));

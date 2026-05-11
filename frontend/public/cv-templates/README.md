@@ -2,11 +2,9 @@
 
 Place the official Mutawai professional CV sample or template in this folder.
 
-Recommended file names:
+Current deployed sample formats:
 
-- `mutawai-professional-cv-template.docx`
-- `mutawai-professional-cv-template.pdf`
-- `mutawai-professional-cv-template.txt`
+- `format-1-kitchen-helper-sample.pdf`
+- `format-2-stella-sample.pdf`
 
-After adding the file, tell Codex the exact file name. The candidate CV generator can then be wired to follow that template's section order, wording style, and formatting rules.
-
+The generator lets candidates select either format after a verified M-Pesa Daraja or PayPal payment. Each verified payment gives 3 CV generation chances before another payment is required.

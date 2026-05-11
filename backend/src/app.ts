@@ -6,6 +6,7 @@ import { adminRouter } from "./modules/admin/admin.routes.js";
 import { applicationsRouter } from "./modules/applications/applications.routes.js";
 import { authRouter } from "./modules/auth/auth.routes.js";
 import { companiesRouter } from "./modules/companies/companies.routes.js";
+import { cvServiceRouter } from "./modules/cv-service/cv-service.routes.js";
 import { jobsRouter } from "./modules/jobs/jobs.routes.js";
 import { uploadRouter } from "./modules/uploads/upload.routes.js";
 import { errorMiddleware } from "./middleware/error.middleware.js";
@@ -25,6 +26,7 @@ app.use("/api/auth", authRouter);
 app.use("/api/jobs", jobsRouter);
 app.use("/api/applications", applicationsRouter);
 app.use("/api/companies", companiesRouter);
+app.use("/api/cv-service", cvServiceRouter);
 app.use("/api/admin", adminRouter);
 app.use("/api/uploads", uploadRouter);
 
@@ -32,6 +34,7 @@ app.use("/auth", authRouter);
 app.use("/jobs", jobsRouter);
 app.use("/applications", applicationsRouter);
 app.use("/companies", companiesRouter);
+app.use("/cv-service", cvServiceRouter);
 app.use("/admin", adminRouter);
 app.use("/uploads", uploadRouter);
 
